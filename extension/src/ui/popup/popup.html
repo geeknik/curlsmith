@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curlsmith</title>
+    <link rel="stylesheet" href="./popup.css">
+  </head>
+  <body>
+    <main class="popup-shell">
+      <header class="topbar">
+        <h1>Curlsmith</h1>
+        <span class="privacy-pill">Local only</span>
+      </header>
+
+      <section id="onboarding" class="notice" hidden>
+        <p>Curlsmith captures website request and response data for domains you approve. Captures may include tokens, cookies, private messages, and account data. Data is stored locally and automatically deleted according to your retention settings. Do not capture sites or accounts you are not authorized to inspect.</p>
+        <button id="ack-onboarding" type="button">Acknowledge</button>
+      </section>
+
+      <section class="status-grid" aria-label="Capture status">
+        <label class="toggle-row">
+          <span>Capture</span>
+          <select id="capture-mode" aria-label="Capture mode">
+            <option value="off">Off</option>
+            <option value="current-tab">Current tab</option>
+            <option value="current-site">Current site</option>
+            <option value="approved-sites">Approved sites</option>
+          </select>
+        </label>
+        <div>
+          <div id="site-host" class="site-host">No site</div>
+          <div id="site-permission" class="site-permission">Permission unavailable</div>
+        </div>
+      </section>
+
+      <section class="metric-row" aria-label="Capture counts">
+        <div>
+          <span id="capture-count" class="metric-value">0</span>
+          <span class="metric-label">records</span>
+        </div>
+        <div>
+          <span id="pending-count" class="metric-value">0</span>
+          <span class="metric-label">pending</span>
+        </div>
+      </section>
+
+      <section class="actions" aria-label="Actions">
+        <button id="allow-site" type="button">Allow site</button>
+        <button id="open-sidebar" type="button">Sidebar</button>
+        <button id="purge-site" type="button" class="danger">Purge site</button>
+      </section>
+
+      <p id="error-line" class="error-line" role="status"></p>
+    </main>
+    <script type="module" src="./popup.js"></script>
+  </body>
+</html>

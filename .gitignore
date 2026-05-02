@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+
+# Build and package outputs
+dist/
+build/
+coverage/
+web-ext-artifacts/
+*.xpi
+*.zip
+*.tar
+*.tar.gz
+
+# Firefox/web-ext local state
+.web-ext-profile/
+web-ext-profile/
+firefox-profile/
+profiles/
+extension/.web-extension-id
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.csr
+secrets/
+
+# Logs and runtime output
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test and temporary files
+.nyc_output/
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local automation/cache state
+.cache/
+.parcel-cache/
+.vite/
+# Added by code-review-graph
+.code-review-graph/
+
+# Local agent/planning files
+AGENTS.md
+DESIGN.md
+.claude/
+.codex/

@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Curlsmith",
+  "version": "0.1.0",
+  "description": "Capture approved-site API requests locally and generate redacted curl commands.",
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "webRequestFilterResponse",
+    "storage",
+    "clipboardWrite",
+    "activeTab"
+  ],
+  "optional_permissions": [
+    "downloads"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "src/background/background.js"
+    ],
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Curlsmith",
+    "default_popup": "src/ui/popup/popup.html"
+  },
+  "sidebar_action": {
+    "default_title": "Curlsmith Capture",
+    "default_panel": "src/ui/sidebar/sidebar.html"
+  },
+  "options_ui": {
+    "page": "src/ui/options/options.html",
+    "open_in_tab": true
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "curlsmith@example.invalid",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
+    }
+  }
+}

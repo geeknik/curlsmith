@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curlsmith Options</title>
+    <link rel="stylesheet" href="./options.css">
+  </head>
+  <body>
+    <main class="options-shell">
+      <header class="topbar">
+        <h1>Curlsmith Options</h1>
+        <button id="purge-all" type="button" class="danger">Purge all captures</button>
+      </header>
+
+      <section class="settings-band">
+        <label class="toggle-row">
+          <input id="capture-enabled" type="checkbox">
+          <span>Capture approved sites</span>
+        </label>
+        <label class="toggle-row">
+          <input id="parser-enabled" type="checkbox">
+          <span>Extract entities</span>
+        </label>
+      </section>
+
+      <section>
+        <h2>Approved Origins</h2>
+        <ul id="approved-origins" class="origin-list"></ul>
+      </section>
+
+      <section>
+        <h2>Retention</h2>
+        <dl class="metric-list">
+          <div>
+            <dt>Mode</dt>
+            <dd id="capture-mode"></dd>
+          </div>
+          <div>
+            <dt>Scoped origin</dt>
+            <dd id="scoped-origin"></dd>
+          </div>
+          <div>
+            <dt>Max records</dt>
+            <dd id="max-records"></dd>
+          </div>
+          <div>
+            <dt>TTL</dt>
+            <dd id="ttl"></dd>
+          </div>
+          <div>
+            <dt>Request cap</dt>
+            <dd id="request-cap"></dd>
+          </div>
+          <div>
+            <dt>Response cap</dt>
+            <dd id="response-cap"></dd>
+          </div>
+        </dl>
+        <form id="retention-form" class="settings-form">
+          <label>
+            <span>Max records</span>
+            <input id="max-records-input" type="number" min="10" max="5000" step="10" required>
+          </label>
+          <label>
+            <span>TTL hours</span>
+            <input id="ttl-hours-input" type="number" min="1" max="720" step="1" required>
+          </label>
+          <label>
+            <span>Request cap KiB</span>
+            <input id="request-cap-input" type="number" min="0" max="1024" step="16" required>
+          </label>
+          <label>
+            <span>Response cap KiB</span>
+            <input id="response-cap-input" type="number" min="0" max="5120" step="64" required>
+          </label>
+          <button type="submit">Save retention</button>
+        </form>
+      </section>
+
+      <p id="status-line" class="status-line" role="status"></p>
+    </main>
+    <script type="module" src="./options.js"></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "curlsmith",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Firefox-first local API capture and styled cURL generator extension.",
+  "scripts": {
+    "dev:server": "node extension/test/integration/server.mjs",
+    "test": "node --test extension/test/unit/*.test.mjs",
+    "check:syntax": "find extension -name '*.js' -print0 | xargs -0 -n1 node --check && node --check extension/test/integration/server.mjs",
+    "lint:web-ext": "web-ext lint --source-dir extension",
+    "package:extension": "web-ext build --source-dir extension --artifacts-dir web-ext-artifacts --overwrite-dest --ignore-files test docs .webextensionignore",
+    "check": "npm test && npm run check:syntax && npm run lint:web-ext"
+  }
+}

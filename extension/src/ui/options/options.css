@@ -1,0 +1,143 @@
+:root {
+  color-scheme: light dark;
+  font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  color: CanvasText;
+  background: Canvas;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+input,
+select {
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  border-radius: 6px;
+  color: CanvasText;
+}
+
+button {
+  padding: 8px 11px;
+  background: color-mix(in srgb, Canvas 92%, CanvasText 8%);
+  cursor: pointer;
+}
+
+input,
+select {
+  padding: 7px 9px;
+  background: Canvas;
+}
+
+.options-shell {
+  display: grid;
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.topbar,
+.settings-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+h2 {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.toggle-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 650;
+}
+
+.origin-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.origin-list li {
+  border-bottom: 1px solid color-mix(in srgb, CanvasText 10%, transparent);
+  padding: 6px 0;
+  overflow-wrap: anywhere;
+}
+
+.metric-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.metric-list div {
+  border-bottom: 1px solid color-mix(in srgb, CanvasText 10%, transparent);
+  padding: 8px 0;
+}
+
+.metric-list dt {
+  color: color-mix(in srgb, CanvasText 68%, Canvas 32%);
+}
+
+.metric-list dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.settings-form label {
+  display: grid;
+  gap: 4px;
+  font-weight: 650;
+}
+
+.settings-form label span {
+  color: color-mix(in srgb, CanvasText 70%, Canvas 30%);
+  font-weight: 600;
+}
+
+.settings-form button {
+  align-self: end;
+  justify-self: start;
+}
+
+.danger {
+  border-color: color-mix(in srgb, #b42318 48%, transparent);
+  color: light-dark(#8a1f17, #ffd2cc);
+}
+
+.status-line {
+  min-height: 20px;
+  margin: 0;
+  color: color-mix(in srgb, CanvasText 70%, Canvas 30%);
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curlsmith Capture</title>
+    <link rel="stylesheet" href="./sidebar.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="toolbar">
+        <h1>Curlsmith</h1>
+        <input id="filter-text" type="search" placeholder="Filter requests" aria-label="Filter requests">
+        <select id="method-filter" aria-label="Filter by method">
+          <option value="">Any method</option>
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="PATCH">PATCH</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+        <select id="status-filter" aria-label="Filter by status">
+          <option value="">Any status</option>
+          <option value="2xx">2xx</option>
+          <option value="3xx">3xx</option>
+          <option value="4xx">4xx</option>
+          <option value="5xx">5xx</option>
+          <option value="error">Errors</option>
+        </select>
+        <select id="body-filter" aria-label="Filter by body">
+          <option value="">Any body</option>
+          <option value="request">Request body</option>
+          <option value="response">Response body</option>
+          <option value="truncated">Truncated</option>
+          <option value="binary">Binary</option>
+        </select>
+        <select id="entity-filter" aria-label="Filter by extracted entities">
+          <option value="">Any entities</option>
+          <option value="has-entities">Has entities</option>
+          <option value="no-entities">No entities</option>
+        </select>
+        <button id="refresh" type="button">Refresh</button>
+        <button id="purge-all" type="button" class="danger">Purge all</button>
+      </header>
+
+      <section class="workspace">
+        <aside class="request-list" aria-label="Captured requests">
+          <div id="request-list" class="request-list-inner"></div>
+        </aside>
+
+        <section class="inspector" aria-label="Request inspector">
+          <div id="empty-state" class="empty-state">No capture selected</div>
+          <div id="capture-detail" class="detail" hidden>
+            <section class="summary-band">
+              <div>
+                <div id="summary-method" class="summary-method"></div>
+                <div id="summary-url" class="summary-url"></div>
+              </div>
+              <div id="summary-status" class="summary-status"></div>
+            </section>
+
+            <nav class="tabs" aria-label="Inspector tabs">
+              <button class="tab is-active" type="button" data-tab="headers">Headers</button>
+              <button class="tab" type="button" data-tab="body">Bodies</button>
+              <button class="tab" type="button" data-tab="curl">cURL</button>
+              <button class="tab" type="button" data-tab="entities">Entities</button>
+            </nav>
+
+            <section id="tab-headers" class="tab-panel"></section>
+            <section id="tab-body" class="tab-panel" hidden></section>
+            <section id="tab-curl" class="tab-panel" hidden>
+              <div class="curl-toolbar">
+                <select id="profile-select" aria-label="cURL profile">
+                  <option value="pretty-redacted">Pretty redacted</option>
+                  <option value="compact-redacted">Compact redacted</option>
+                  <option value="heredoc-json">Here-doc JSON</option>
+                  <option value="pretty-full">Pretty full</option>
+                  <option value="compact-full">Compact full</option>
+                </select>
+                <button id="copy-redacted" type="button">Copy</button>
+                <button id="copy-full" type="button" class="danger">Reveal copy</button>
+              </div>
+              <pre id="curl-output" class="code-block"></pre>
+              <ul id="curl-warnings" class="warning-list"></ul>
+            </section>
+            <section id="tab-entities" class="tab-panel" hidden></section>
+          </div>
+        </section>
+      </section>
+      <p id="status-line" class="status-line" role="status"></p>
+    </main>
+    <script type="module" src="./sidebar.js"></script>
+  </body>
+</html>
