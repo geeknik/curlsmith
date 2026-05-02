@@ -32,6 +32,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   onboardingAcknowledged: false,
   maxRecords: 1000,
   ttlMs: 24 * 60 * 60 * 1000,
+  maxTotalPayloadBytes: 100 * 1024 * 1024,
   maxRequestBodyBytes: 512 * 1024,
   maxResponseBodyBytes: 2 * 1024 * 1024,
   maxConcurrentFilteredRequests: 64,

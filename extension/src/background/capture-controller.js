@@ -303,7 +303,7 @@ export class CaptureController {
     try {
       stored = await this.persistWithFallback(state);
       this.completedSinceRetention += 1;
-      if (this.completedSinceRetention >= 20) {
+      if (state.payloads.length > 0 || this.completedSinceRetention >= 20) {
         this.completedSinceRetention = 0;
         await this.store.enforceRetention(this.settings);
       }
@@ -634,6 +634,7 @@ export class CaptureController {
         "includeCookiesInFullCurl",
         "maxRecords",
         "ttlMs",
+        "maxTotalPayloadBytes",
         "maxRequestBodyBytes",
         "maxResponseBodyBytes"
       ]) {
@@ -768,6 +769,7 @@ function pathLooksCollectionEndpoint(path) {
 function retentionChanged(patch) {
   return Object.prototype.hasOwnProperty.call(patch, "maxRecords") ||
     Object.prototype.hasOwnProperty.call(patch, "ttlMs") ||
+    Object.prototype.hasOwnProperty.call(patch, "maxTotalPayloadBytes") ||
     Object.prototype.hasOwnProperty.call(patch, "maxRequestBodyBytes") ||
     Object.prototype.hasOwnProperty.call(patch, "maxResponseBodyBytes");
 }

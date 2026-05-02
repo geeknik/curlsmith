@@ -17,6 +17,7 @@ const ACTION_SCHEMAS = Object.freeze({
     includeCookiesInFullCurl: "optionalBoolean",
     maxRecords: "optionalRetentionRecords",
     ttlMs: "optionalTtlMs",
+    maxTotalPayloadBytes: "optionalTotalPayloadByteLimit",
     maxRequestBodyBytes: "optionalRequestByteLimit",
     maxResponseBodyBytes: "optionalResponseByteLimit"
   }),
@@ -101,6 +102,9 @@ function validateField(kind, value) {
   }
   if (kind === "optionalTtlMs") {
     return value === undefined || (Number.isInteger(value) && value >= 60 * 60 * 1000 && value <= 30 * 24 * 60 * 60 * 1000);
+  }
+  if (kind === "optionalTotalPayloadByteLimit") {
+    return value === undefined || (Number.isInteger(value) && value >= 0 && value <= 1024 * 1024 * 1024);
   }
   if (kind === "optionalRequestByteLimit") {
     return value === undefined || (Number.isInteger(value) && value >= 0 && value <= 1024 * 1024);

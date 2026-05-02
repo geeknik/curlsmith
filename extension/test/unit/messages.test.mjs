@@ -50,6 +50,7 @@ test("message validation accepts bounded retention settings", () => {
     action: "UPDATE_SETTINGS",
     maxRecords: 1000,
     ttlMs: 24 * 60 * 60 * 1000,
+    maxTotalPayloadBytes: 100 * 1024 * 1024,
     maxRequestBodyBytes: 512 * 1024,
     maxResponseBodyBytes: 2 * 1024 * 1024
   });
@@ -58,6 +59,11 @@ test("message validation accepts bounded retention settings", () => {
 });
 
 test("message validation rejects excessive retention settings", () => {
+  assert.throws(() => validateMessage({
+    action: "UPDATE_SETTINGS",
+    maxTotalPayloadBytes: 1024 * 1024 * 1024 + 1
+  }), /Invalid message field/);
+
   assert.throws(() => validateMessage({
     action: "UPDATE_SETTINGS",
     maxResponseBodyBytes: 6 * 1024 * 1024

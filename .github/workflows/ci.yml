@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test and package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit npm dependency surface
+        run: npm audit
+
+      - name: Run project checks
+        run: npm run check
+
+      - name: Build extension package
+        run: npm run package:extension
+
+      - name: Verify package excludes local-only files
+        run: |
+          set -euo pipefail
+          artifact="$(ls web-ext-artifacts/curlsmith-*.zip | head -n 1)"
+          unzip -l "$artifact"
+          forbidden='(^|/)(test|docs)/|(^|/)(AGENTS\.md|DESIGN\.md)$|(^|/)(\.claude|\.code-review-graph)/'
+          if unzip -l "$artifact" | grep -E "$forbidden"; then
+            echo "Package contains local-only files" >&2
+            exit 1
+          fi
+
+      - name: Upload unsigned extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: curlsmith-extension
+          path: web-ext-artifacts/curlsmith-*.zip
+          if-no-files-found: error

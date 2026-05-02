@@ -2,6 +2,10 @@
 
 Firefox-first, local-first API capture and styled cURL generation.
 
+Curlsmith is pre-release software for controlled local testing. It captures request and response metadata for sites you approve and stores that data locally in the browser profile. Captures may include credentials, cookies, tokens, private messages, account data, or proprietary API data.
+
+Do not capture sites, accounts, or traffic you are not authorized to inspect.
+
 ## Local Firefox Check
 
 1. Load `extension/` as a temporary add-on from `about:debugging#/runtime/this-firefox`.
@@ -32,5 +36,13 @@ npm run check
 npm run package:extension
 ```
 
-`npm run check` runs unit tests, JavaScript syntax checks, and `web-ext lint`.
+`npm run check` runs unit tests, JavaScript syntax checks, Mozilla add-on linting, and a runtime dependency audit.
 `npm run package:extension` writes an unsigned extension ZIP to `web-ext-artifacts/`.
+
+Runtime extension code is dependency-free. `addons-linter` is pinned as a dev dependency so CI and local linting use the same add-on policy checks.
+
+## Known Gaps Before Public Release
+
+- Browser-level smoke tests are still manual.
+- Some cURL profiles from the design, including PowerShell, Fish, and binary-file output, are not implemented.
+- Extension packages are unsigned and intended only for local testing.
