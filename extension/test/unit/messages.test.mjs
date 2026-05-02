@@ -13,6 +13,18 @@ test("message validation accepts exact known schemas", () => {
   assert.equal(message.action, "GENERATE_CURL");
 });
 
+test("message validation accepts supported cURL profiles", () => {
+  for (const profile of ["binary-file", "powershell", "fish"]) {
+    const message = validateMessage({
+      action: "GENERATE_CURL",
+      id: "cap:abc-123",
+      profile,
+      revealSecrets: false
+    });
+    assert.equal(message.profile, profile);
+  }
+});
+
 test("message validation rejects unknown fields", () => {
   assert.throws(() => validateMessage({
     action: "PURGE_ALL",

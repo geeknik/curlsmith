@@ -46,12 +46,16 @@ function bodyFlagForKind(kind) {
   return "--data-binary";
 }
 
-function isPrettyProfile(profile) {
-  return profile.startsWith("pretty") || profile === "heredoc-json";
-}
-
 function buildHeredoc(bodyText) {
   return `--data-binary @- <<'EOF'\n${bodyText}\nEOF`;
+}
+
+function psSingleQuote(input) {
+  return "'" + String(input).replace(/'/g, "''") + "'";
+}
+
+function fishSingleQuote(input) {
+  return "'" + String(input).replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
 }
 
 function redactTokenLikeText(text) {
@@ -86,36 +90,114 @@ function bodyTextForCurl(text, kind, revealSecrets) {
   return redactTokenLikeText(text);
 }
 
-function joinPrettyLines(lines) {
-  return lines.map((line, index) => {
-    return index === lines.length - 1 ? line : `${line} \\`;
+function raw(value) {
+  return { value: String(value), quote: false };
+}
+
+function quoted(value) {
+  return { value: String(value), quote: true };
+}
+
+function literal(value) {
+  return { literal: String(value) };
+}
+
+function commandConfig(profile) {
+  if (profile === "powershell") {
+    return {
+      commandName: "curl.exe",
+      continuation: "`",
+      pretty: true,
+      quote: psSingleQuote,
+      heredocLargeJson: false
+    };
+  }
+
+  if (profile === "fish") {
+    return {
+      commandName: "curl",
+      continuation: "\\",
+      pretty: true,
+      quote: fishSingleQuote,
+      heredocLargeJson: false
+    };
+  }
+
+  return {
+    commandName: "curl",
+    continuation: "\\",
+    pretty: !profile.startsWith("compact"),
+    quote: shSingleQuote,
+    heredocLargeJson: profile.startsWith("pretty")
+  };
+}
+
+function renderCommand(lines, config) {
+  const rendered = lines.map((line) => {
+    if (line.length === 1 && typeof line[0].literal === "string") {
+      return line[0].literal;
+    }
+    return line.map((part) => part.quote ? config.quote(part.value) : part.value).join(" ");
+  });
+
+  if (!config.pretty) {
+    return rendered.join(" ");
+  }
+
+  return rendered.map((line, index) => {
+    return index === rendered.length - 1 ? line : `${line} ${config.continuation}`;
   }).join("\n");
+}
+
+function payloadFilenameForKind(kind) {
+  if (kind === BODY_KIND.JSON) {
+    return "curlsmith-request-body.json";
+  }
+  if (kind === BODY_KIND.BINARY) {
+    return "curlsmith-request-body.bin";
+  }
+  if (kind === BODY_KIND.MULTIPART) {
+    return "curlsmith-request-body.multipart";
+  }
+  return "curlsmith-request-body.txt";
+}
+
+function willEmitRequestBody(profile, requestBody, requestBodyText) {
+  if (!requestBody || requestBody.truncated || requestBody.kind === BODY_KIND.NONE) {
+    return false;
+  }
+  if (profile === "binary-file") {
+    return true;
+  }
+  if (requestBody.kind === BODY_KIND.BINARY || requestBody.kind === BODY_KIND.MULTIPART) {
+    return false;
+  }
+  return Boolean(requestBodyText);
 }
 
 export function generateCurl(capture, options = {}) {
   const profile = options.profile || "pretty-redacted";
+  const config = commandConfig(profile);
   const revealSecrets = options.revealSecrets === true;
   const includeCookies = options.includeCookies === true;
   const requestBodyText = typeof options.requestBodyText === "string" ? options.requestBodyText : "";
   const warnings = Array.isArray(capture.replay?.warnings)
     ? capture.replay.warnings.slice()
     : [];
-  const tokens = ["curl"];
   const lines = [];
   const method = String(capture.request?.method || "GET").toUpperCase();
   const url = redactUrl(capture.request.url, revealSecrets);
-  const quotedUrl = shSingleQuote(url);
+  const requestBody = capture.request.body;
+  const bodyWillBeEmitted = willEmitRequestBody(profile, requestBody, requestBodyText);
 
-  tokens.push(quotedUrl);
-  lines.push(`curl ${quotedUrl}`);
+  lines.push([raw(config.commandName), quoted(url)]);
 
   function addArg(...args) {
-    tokens.push(...args);
-    lines.push(args.join(" "));
+    lines.push(args);
   }
 
-  if (method !== "GET" && !(method === "POST" && requestBodyText)) {
-    addArg("-X", method);
+  if (method !== "GET" && !(method === "POST" && bodyWillBeEmitted)) {
+    addArg(raw("-X"), raw(method));
   }
 
   for (const header of capture.request.headers || []) {
@@ -129,7 +211,7 @@ export function generateCurl(capture, options = {}) {
 
     if (name === "cookie" && revealSecrets && !includeCookies) {
       const redacted = redactHeader(header, false);
-      addArg("-H", shSingleQuote(`${redacted.name}: ${redacted.value}`));
+      addArg(raw("-H"), quoted(`${redacted.name}: ${redacted.value}`));
       warnings.push("cookies_redacted");
       continue;
     }
@@ -142,29 +224,34 @@ export function generateCurl(capture, options = {}) {
         warnings.push("authorization_redacted");
       }
     }
-    addArg("-H", shSingleQuote(`${redacted.name}: ${redacted.value}`));
+    addArg(raw("-H"), quoted(`${redacted.name}: ${redacted.value}`));
   }
 
-  const requestBody = capture.request.body;
   if (requestBody?.truncated) {
     warnings.push("body_truncated");
+  } else if (profile === "binary-file" && requestBody && requestBody.kind !== BODY_KIND.NONE) {
+    addArg(raw("--data-binary"), quoted(`@${payloadFilenameForKind(requestBody.kind)}`));
+    warnings.push("payload_file_required");
+    if (requestBody.kind === BODY_KIND.BINARY) {
+      warnings.push("binary_body_requires_export");
+    } else if (requestBody.kind === BODY_KIND.MULTIPART) {
+      warnings.push("multipart_approximation");
+    }
   } else if (requestBody?.kind === BODY_KIND.BINARY) {
     warnings.push("binary_body_requires_export");
   } else if (requestBody?.kind === BODY_KIND.MULTIPART) {
     warnings.push("multipart_approximation");
   } else if (requestBodyText && requestBody?.kind !== BODY_KIND.NONE) {
     const safeRequestBodyText = bodyTextForCurl(requestBodyText, requestBody.kind, revealSecrets);
-    if (profile === "heredoc-json" || (requestBody.kind === BODY_KIND.JSON && safeRequestBodyText.length > 4096)) {
-      const heredoc = buildHeredoc(safeRequestBodyText);
-      tokens.push(heredoc);
-      lines.push(heredoc);
+    if (profile === "heredoc-json" || (config.heredocLargeJson && requestBody.kind === BODY_KIND.JSON && safeRequestBodyText.length > 4096)) {
+      lines.push([literal(buildHeredoc(safeRequestBodyText))]);
     } else {
-      addArg(bodyFlagForKind(requestBody.kind), shSingleQuote(safeRequestBodyText));
+      addArg(raw(bodyFlagForKind(requestBody.kind)), quoted(safeRequestBodyText));
     }
   }
 
   const uniqueWarnings = Array.from(new Set(warnings));
-  const command = isPrettyProfile(profile) ? joinPrettyLines(lines) : tokens.join(" ");
+  const command = renderCommand(lines, config);
 
   return {
     command,

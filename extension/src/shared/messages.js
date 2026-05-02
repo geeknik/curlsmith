@@ -36,7 +36,10 @@ const VALID_CURL_PROFILES = new Set([
   "pretty-full",
   "compact-redacted",
   "compact-full",
-  "heredoc-json"
+  "heredoc-json",
+  "binary-file",
+  "powershell",
+  "fish"
 ]);
 
 const VALID_CAPTURE_MODES = new Set([

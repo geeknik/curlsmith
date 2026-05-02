@@ -1,5 +1,10 @@
 # Curlsmith
 
+[![CI](https://github.com/geeknik/curlsmith/actions/workflows/ci.yml/badge.svg)](https://github.com/geeknik/curlsmith/actions/workflows/ci.yml)
+[![Firefox](https://img.shields.io/badge/Firefox-140%2B-FF7139?logo=firefox-browser&logoColor=white)](https://www.mozilla.org/firefox/)
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-2f4f4f)
+[![License](https://img.shields.io/github/license/geeknik/curlsmith)](LICENSE)
+
 Firefox-first, local-first API capture and styled cURL generation.
 
 Curlsmith is pre-release software for controlled local testing. It captures request and response metadata for sites you approve and stores that data locally in the browser profile. Captures may include credentials, cookies, tokens, private messages, account data, or proprietary API data.
@@ -44,5 +49,4 @@ Runtime extension code is dependency-free. `addons-linter` is pinned as a dev de
 ## Known Gaps Before Public Release
 
 - Browser-level smoke tests are still manual.
-- Some cURL profiles from the design, including PowerShell, Fish, and binary-file output, are not implemented.
 - Extension packages are unsigned and intended only for local testing.

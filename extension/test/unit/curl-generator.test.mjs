@@ -91,3 +91,47 @@ test("capture replay warnings are preserved in cURL result", () => {
 
   assert.equal(result.warnings.includes("redirect_chain_present"), true);
 });
+
+test("PowerShell profile uses curl.exe and PowerShell-safe single quotes", () => {
+  const result = generateCurl(capture(), {
+    profile: "powershell",
+    revealSecrets: false,
+    requestBodyText: "{\"title\":\"Bob's post\"}"
+  });
+
+  assert.match(result.command, /^curl\.exe /);
+  assert.match(result.command, / `\n-H /);
+  assert.match(result.command, /Bob''s post/);
+  assert.doesNotMatch(result.command, /query-secret/);
+});
+
+test("Fish profile escapes single quotes and backslashes", () => {
+  const result = generateCurl(capture(), {
+    profile: "fish",
+    revealSecrets: false,
+    requestBodyText: "{\"title\":\"Bob's \\\\ path\"}"
+  });
+
+  assert.match(result.command, /^curl /);
+  assert.match(result.command, / \\\n-H /);
+  assert.match(result.command, /Bob\\'s \\\\\\\\ path/);
+  assert.doesNotMatch(result.command, /query-secret/);
+});
+
+test("binary-file profile references a payload file instead of inline body bytes", () => {
+  const item = capture();
+  item.request.body = {
+    kind: "binary",
+    truncated: false
+  };
+
+  const result = generateCurl(item, {
+    profile: "binary-file",
+    revealSecrets: false,
+    requestBodyText: ""
+  });
+
+  assert.match(result.command, /--data-binary '@curlsmith-request-body\.bin'/);
+  assert.equal(result.warnings.includes("payload_file_required"), true);
+  assert.equal(result.warnings.includes("binary_body_requires_export"), true);
+});

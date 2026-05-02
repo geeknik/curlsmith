@@ -297,7 +297,14 @@ export class CaptureController {
     }
 
     state.stored = true;
-    state.capture.replay.curlProfiles = ["pretty-redacted", "compact-redacted"];
+    state.capture.replay.curlProfiles = [
+      "pretty-redacted",
+      "compact-redacted",
+      "heredoc-json",
+      "binary-file",
+      "powershell",
+      "fish"
+    ];
 
     let stored = false;
     try {
