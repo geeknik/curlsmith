@@ -39,14 +39,16 @@ The fixture server intentionally uses fake test tokens only. Do not run capture 
 ```sh
 npm run check
 npm run package:extension
+npm run smoke:browser
 ```
 
 `npm run check` runs unit tests, JavaScript syntax checks, Mozilla add-on linting, and a runtime dependency audit.
 `npm run package:extension` writes an unsigned extension ZIP to `web-ext-artifacts/`.
+`npm run smoke:browser` launches the fixture page in Firefox through `web-ext` and verifies the temporary add-on starts cleanly. Set `FIREFOX_BINARY` or `WEB_EXT_BINARY` if auto-detection does not find your local tools.
 
 Runtime extension code is dependency-free. `addons-linter` is pinned as a dev dependency so CI and local linting use the same add-on policy checks.
 
 ## Known Gaps Before Public Release
 
-- Browser-level smoke tests are still manual.
+- Full end-to-end browser automation for permission granting and capture assertions is not in CI yet.
 - Extension packages are unsigned and intended only for local testing.
