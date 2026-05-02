@@ -11,6 +11,27 @@ Curlsmith is pre-release software for controlled local testing. It captures requ
 
 Do not capture sites, accounts, or traffic you are not authorized to inspect.
 
+## What Works Today
+
+- Runtime host permission flow with capture scopes for off, current tab, current site, and approved sites.
+- Passive request capture for method, URL, headers, request body samples, response status, response headers, response body samples, redirects, truncation state, binary markers, and hashes.
+- Bounded local storage in IndexedDB with retention settings for max records, TTL, request cap, response cap, and total payload cap.
+- Redaction by default for authorization headers, cookies, CSRF/XSRF tokens, API keys, query secrets, JSON body secrets, form secrets, and token-like text.
+- cURL profiles for pretty, compact, full-fidelity reveal, here-doc JSON, body-file replay, PowerShell, and Fish.
+- Basic entity extraction from JSON and NDJSON responses for users, posts, comments, messages, media, and unknown entities.
+- Sidebar inspection, filtering, redacted JSON tree rendering, cURL copy, entity JSONL/CSV export, purge all, and purge current site.
+- Options page controls for capture, parser, retention, storage caps, and approved origins.
+- CI, Mozilla add-on linting, runtime dependency audit, unsigned ZIP packaging, and package exclusion checks.
+
+## Security and Privacy Posture
+
+- Local-only by design: no telemetry, analytics, remote parsing, cloud sync, or hidden outbound extension requests.
+- Runtime extension code is dependency-free.
+- Captured content is rendered as text, not HTML.
+- Full-fidelity cURL copy requires explicit reveal and records local audit metadata without secret values.
+- Packages exclude local planning, agent, test, and docs files.
+- Captures remain sensitive even when stored locally; purge after testing and keep retention windows short.
+
 ## Local Firefox Check
 
 1. Load `extension/` as a temporary add-on from `about:debugging#/runtime/this-firefox`.
@@ -31,24 +52,28 @@ Expected behavior:
 - Redacted cURL output does not expose `Authorization`, cookies, CSRF headers, query tokens, or token-like body fields.
 - Full-fidelity cURL requires the **Reveal copy** path.
 - Captured response previews are bounded, and the large response is marked truncated.
+- PowerShell, Fish, here-doc JSON, and body-file cURL profiles are available from the cURL profile selector.
+- Extracted entities can be exported as JSONL or CSV without raw captured objects.
 
-The fixture server intentionally uses fake test tokens only. Do not run capture against real accounts until browser integration tests and AMO hardening checks are in place.
+The fixture server intentionally uses fake test tokens only. Use it for repeatable local checks before testing against real traffic.
 
 ## Project Checks
 
 ```sh
+npm ci
 npm run check
 npm run package:extension
-npm run smoke:browser
+npm audit
 ```
 
 `npm run check` runs unit tests, JavaScript syntax checks, Mozilla add-on linting, and a runtime dependency audit.
 `npm run package:extension` writes an unsigned extension ZIP to `web-ext-artifacts/`.
-`npm run smoke:browser` launches the fixture page in Firefox through `web-ext` and verifies the temporary add-on starts cleanly. Set `FIREFOX_BINARY` or `WEB_EXT_BINARY` if auto-detection does not find your local tools.
+`npm audit` verifies the full npm dependency surface.
 
-Runtime extension code is dependency-free. `addons-linter` is pinned as a dev dependency so CI and local linting use the same add-on policy checks.
+`addons-linter` is pinned as a dev dependency so CI and local linting use the same add-on policy checks.
 
 ## Known Gaps Before Public Release
 
-- Full end-to-end browser automation for permission granting and capture assertions is not in CI yet.
+- AMO signing and listing review are not done.
+- End-to-end browser automation for permission granting and capture assertions is not in CI.
 - Extension packages are unsigned and intended only for local testing.
